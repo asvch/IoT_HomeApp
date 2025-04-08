@@ -1,0 +1,12 @@
+2025-04-05 23:06:36,570 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-05 23:06:44,059 - INFO - Light turned ON due to low LDR
+2025-04-05 23:17:06,186 - INFO - Light turned ON due to low LDR
+2025-04-05 23:17:10,138 - INFO - Light turned OFF due to high LDR
+2025-04-05 23:17:18,701 - INFO - Light turned ON due to low LDR
+2025-04-05 23:17:32,367 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-05 23:17:47,117 - INFO - Light turned OFF due to high LDR
+2025-04-05 23:18:13,574 - INFO - Light turned ON due to low LDR
+2025-04-05 23:29:36,648 - INFO - Light turned OFF due to high LDR
+2025-04-05 23:29:40,912 - INFO - Fan turned OFF due to temperature normal
+2025-04-05 23:30:52,849 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-05 23:30:56,278 - INFO - Fan turned OFF due to temperature normal
