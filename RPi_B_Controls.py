@@ -1,3 +1,6 @@
+# to activate virtual env: source kasa-env/bin/activate
+# instead of pip install use: python -m pip install python-kasa for ex
+
 import asyncio
 import json
 import paho.mqtt.client as mqtt
@@ -6,6 +9,7 @@ from kasa import SmartPlug    # kasa discover in terminal to get plug ip
 import logging
 from datetime import datetime, timedelta
 import json
+import RPi.GPIO as GPIO
 
 logging.basicConfig(
     filename="device_usage.log",
@@ -24,32 +28,42 @@ FAN_PLUG_IP = "192.168.26.152"
 LIGHT_PLUG_IP = "192.168.26.219" 
 
 
-CA_CERT = "C:/Users/ajayc/Downloads/AmazonRootCA1.pem"
-CLIENT_CERT = "C:/Users/ajayc/Downloads/e0d1fe9ce48bd96a1a3978fed22fe2b5fea6a831bc8b5b95b25c536800023d95-certificate.pem.crt"
-PRIVATE_KEY = "C:/Users/ajayc/Downloads/e0d1fe9ce48bd96a1a3978fed22fe2b5fea6a831bc8b5b95b25c536800023d95-private.pem.key"
+CA_CERT = "/home/ajayc/R_Certs/AmazonRootCA1.pem"
+CLIENT_CERT = "/home/ajayc/R_Certs/certificate.pem.crt"
+PRIVATE_KEY = "/home/ajayc/R_Certs/private.pem.key"
 
-AWS_IOT_ENDPOINT = "a1s8a3str92yk-ats.iot.us-east-1.amazonaws.com"
+# AWS_IOT_ENDPOINT = "a1s8a3str92yk-ats.iot.us-east-1.amazonaws.com"   # Ajays endpoint
+AWS_IOT_ENDPOINT = "abvk6ulxodwj4-ats.iot.us-east-1.amazonaws.com"
+
+# Topics to Subscribe to
 TEMP_TOPIC = "sensors/temperature"
 LDR_TOPIC = "sensors/ldr"
+CONTROL_SETTING_TOPIC = "status_control"
+MANUAL_LED = "manual_status_led"
+MANUAL_FAN = "manual_status_fan"
+
+CONTROL_MODE = "automatic"  # Default control setting
+FAN_STATUS = "off"  # Default fan status
+LIGHT_STATUS = "off"  # Default light status
+
 CLIENT_ID = "IoT_Home_Controller"     # NEED TO HAVE DIFFERENT CLIENT ID IF 2 SCRIPTS RUNNING AT ONCE w/ same credentials
 AWS_IOT_PORT = 8883
 
 # Temperature threshold
-TEMP_THRESHOLD = 68  
+TEMP_THRESHOLD = 80  
 
 # LDR threshold
-LDR_THRESHOLD = 1000            # ADJUST AS REQUIRED
+LDR_THRESHOLD = 0.35             # ADJUST AS REQUIRED
 
+def button_callback(channel):
+    global FAN_STATUS
+    # fan_status = "off"                # REMEMBER TO CHANGE - ADD GLOBAL FAN & LIGHT STATUS VALUES
 
+    manual_status = "off" if FAN_STATUS == "on" else "on"
+    new_status = json.dumps({"fan": manual_status})
+    client.publish(MANUAL_FAN, new_status)
+    print("Button pressed! Toggled fan status:", manual_status)
 
-# async def control_kasa(plug_ip, state):
-#     plug = SmartPlug(plug_ip)
-#     await plug.update()
-
-#     if state == "on":
-#         await plug.turn_on()
-#     else:
-#         await plug.turn_off()
 
 async def control_kasa(plug_ip, state, device_name="Unknown", reason="automatic"):
     plug = SmartPlug(plug_ip)
@@ -78,7 +92,7 @@ async def control_kasa(plug_ip, state, device_name="Unknown", reason="automatic"
 def report_usage():
     now = datetime.now()
     for device, info in device_states.items():
-        total_duration = timedelta(hours=1)  # Example: last 1 hour
+        total_duration = timedelta(hours=0.5)  
         on_time = info["on_duration"]
 
         if info["state"] == "on" and info["last_changed"]:
@@ -89,85 +103,100 @@ def report_usage():
 
 
 def on_message(client, userdata, msg):
-    try:
-        payload = json.loads(msg.payload.decode())
-        print(f"Received message: {payload}")
-        print(report_usage())
 
-        if msg.topic == TEMP_TOPIC:
+    global CONTROL_MODE
+
+    topic = msg.topic
+    # print(f"Raw message received on {msg.topic}: {msg.payload}")
+
+    payload_raw = msg.payload.decode().strip()
+    print(f"Message on {msg.topic}: {payload_raw}")
+
+    if not payload_raw:
+            print("Empty payload received, skipping...")
+            return
+    
+    payload = json.loads(msg.payload.decode())
+
+    print(f"Received on {topic}: {payload}")
+
+    # Handle control mode change
+    if topic == CONTROL_SETTING_TOPIC:
+        mode = payload.get("status", "").lower()
+        if mode in ["automatic", "manual"]:
+            CONTROL_MODE = mode
+            print(f"-----------------  Control mode set to: {CONTROL_MODE} -----------------")
+        return
+
+    # Automatic Mode Logic
+    if CONTROL_MODE == "automatic":
+        if topic == TEMP_TOPIC:
             temperature = payload.get("temperature")
+            print(report_usage())
             if temperature is not None:
                 if temperature > TEMP_THRESHOLD:
                     asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", "temperature threshold exceeded"))
-                    client.publish("HomePi/FanStatus", json.dumps({"status": "ON"}))
+                    client.publish("sensors/fan", json.dumps({"status": "on"}))
+                    client.publish("Alert_temp", json.dumps({"Alert": "on"}))
+                    print("Fan turned ON - AUTO")
                 else:
                     asyncio.run(control_kasa(FAN_PLUG_IP, "off", "Fan", "temperature normal"))
-                    client.publish("HomePi/FanStatus", json.dumps({"status": "OFF"}))
+                    client.publish("sensors/fan", json.dumps({"status": "off"}))
+                    print("Fan turned OFF - AUTO")
 
-        elif msg.topic == LDR_TOPIC:
+        elif topic == LDR_TOPIC:
             ldr_value = payload.get("brightness")
+            print(report_usage())
             if ldr_value is not None:
-                if ldr_value < LDR_THRESHOLD:
+                if ldr_value > LDR_THRESHOLD:
                     asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", "low LDR"))
-                    client.publish("HomePi/LightStatus", json.dumps({"status": "ON"}))
+                    client.publish("sensors/led", json.dumps({"status": "on"}))
+                    client.publish("Alert_brightness", json.dumps({"Alert": "on"}))
+                    print("Light turned ON - AUTO")
                 else:
                     asyncio.run(control_kasa(LIGHT_PLUG_IP, "off", "Light", "high LDR"))
-                    client.publish("HomePi/LightStatus", json.dumps({"status": "OFF"}))
+                    client.publish("sensors/led", json.dumps({"status": "off"}))
+                    print("Light turned OFF - AUTO")
+
+    # Manual Mode Logic
+    elif CONTROL_MODE == "manual":
+        if topic == MANUAL_FAN:
+            manual_fan = payload.get("fan")
+            if manual_fan is not None:
+                if manual_fan == "on":
+                    asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", "manual control"))
+                    client.publish("sensors/fan", json.dumps({"status": "on"}))
+                    print("Fan turned ON - MANUAL")
+                else:
+                    asyncio.run(control_kasa(FAN_PLUG_IP, "off", "Fan", "manual control"))
+                    client.publish("sensors/fan", json.dumps({"status": "off"}))
+                    print("Fan turned OFF - MANUAL")
+        
+        elif topic == MANUAL_LED:
+            manual_led = payload.get("led")
+            if manual_led is not None:
+                if manual_led == "on":
+                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", "manual control"))
+                    client.publish("sensors/led", json.dumps({"status": "on"}))
+                    print("Light turned ON - MANUAL")
+                else:
+                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "off", "Light", "manual control"))
+                    client.publish("sensors/led", json.dumps({"status": "off"}))
+                    print("Light turned OFF - MANUAL")
 
 
-        # if msg.topic == TEMP_TOPIC:
-        #     temperature = payload.get("temperature")
-        #     if temperature is not None:
-        #         print(f"Received temperature: {temperature}°F")
-        #         if temperature > TEMP_THRESHOLD:
-        #             print("Temperature is above threshold! Turning Fan ON.")
-        #             # asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", temperature))
-        #             asyncio.run(control_kasa(FAN_PLUG_IP, "on"))
 
-        #         else:
-        #             print("Temperature is below threshold! Turning Fan OFF.")
-        #             # asyncio.run(control_kasa(FAN_PLUG_IP, "off", "Fan", temperature))
-        #             asyncio.run(control_kasa(FAN_PLUG_IP, "off"))
-
-        # elif msg.topic == LDR_TOPIC:
-        #     ldr_value = payload.get("ldr")
-        #     if ldr_value is not None:
-        #         print(f"Received LDR value: {ldr_value}")
-        #         if ldr_value < LDR_THRESHOLD:
-        #             print("LDR value is low! Turning Light ON.")
-        #             # asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", ldr_value))
-        #             asyncio.run(control_kasa(LIGHT_PLUG_IP, "on"))
-        #         else:
-        #             print("LDR value is high! Turning Light OFF.")
-        #             # asyncio.run(control_kasa(LIGHT_PLUG_IP, "off", "Light", ldr_value))
-        #             asyncio.run(control_kasa(LIGHT_PLUG_IP, "off"))
-
-    except Exception as e:
-        print(f"Error processing MQTT message: {e}")
-
-
-# def on_message(client, userdata, msg):
-#     try:
-#         payload = json.loads(msg.payload.decode())
-#         print(f"Received message: {payload}")
-#         temperature = payload.get("temperature", None)            
-
-#         if temperature is not None:
-#             print(f"Received temperature: {temperature}°F")
-
-#             if temperature > TEMP_THRESHOLD:
-#                 print("Temperature is above threshold! Turning plug ON.")
-#                 asyncio.run(control_kasa("on"))
-#             else:
-#                 print("Temperature is below threshold! Turning plug OFF.")
-#                 asyncio.run(control_kasa("off"))
-#         else:
-#             print("Invalid temperature data received.")
-
-#     except Exception as e:
-#         print(f"Error processing MQTT message: {e}")
 
 if __name__ == "__main__":
+
+    # Code for Pi B Button
+    BUTTON_PIN = 5
+
+    GPIO.cleanup()
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Pull-up resistor
+    GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=button_callback, bouncetime=300)
+
     # Set up MQTT client
     client = mqtt.Client(client_id=CLIENT_ID)
     client.tls_set(CA_CERT, certfile=CLIENT_CERT, keyfile=PRIVATE_KEY, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1_2, ciphers=None)
@@ -177,14 +206,16 @@ if __name__ == "__main__":
     print("Connected to MQTT broker")
     
     client.publish("HomePi/PiBStatus", json.dumps({"message": "Raspberry Pi B is online"}))
-    client.publish("HomePi/FanStatus", json.dumps({"status": "OFF"}))
-    client.publish("HomePi/LightStatus", json.dumps({"status": "OFF"}))
+    client.publish("sensors/fan", json.dumps({"status": "off"}))
+    client.publish("sensors/led", json.dumps({"status": "off"}))
 
+    client.subscribe(CONTROL_SETTING_TOPIC)    # decides if manual or automatic
     client.subscribe(TEMP_TOPIC)
     client.subscribe(LDR_TOPIC)
+    client.subscribe(MANUAL_LED)                  # just subscribe to manual topics now too
+    client.subscribe(MANUAL_FAN)
     print("Subscribed to topics")
 
-    # client.on_connect = on_connect
     client.on_message = on_message
 
 
