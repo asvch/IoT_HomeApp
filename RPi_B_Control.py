@@ -61,7 +61,7 @@ def button_callback(channel):
     print("THE FAN STATUS", fan_status)
 
     manual_status = "off" if fan_status == "on" else "on"
-    new_status = json.dumps({"fan": manual_status})
+    new_status = json.dumps({"status": manual_status})
     client.publish(MANUAL_FAN, new_status)
     print("Button pressed! Toggled fan status:", manual_status)
 
@@ -173,26 +173,26 @@ def on_message(client, userdata, msg):
             # print(report_usage())
             if temperature is not None:
                 if temperature > TEMP_THRESHOLD:
-                    asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", "temperature threshold exceeded"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(FAN_PLUG_IP, "on", "Fan", "temperature threshold exceeded")))).start()
                     client.publish("sensors/fan", json.dumps({"status": "on"}))
                     client.publish("Alert_temp", json.dumps({"status": "on"}))
                     print("Fan turned ON - AUTO")
                 else:
-                    asyncio.run(control_kasa(FAN_PLUG_IP, "off", "Fan", "temperature normal"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(FAN_PLUG_IP, "off", "Fan", "temperature normal")))).start()
                     client.publish("sensors/fan", json.dumps({"status": "off"}))
                     print("Fan turned OFF - AUTO")
 
         elif topic == LDR_TOPIC:
-            ldr_value = payload.get("brightness")
+            ldr_value = payload.get("darkness")
             # print(report_usage())
             if ldr_value is not None:
                 if ldr_value > LDR_THRESHOLD:
-                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", "low LDR"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(LIGHT_PLUG_IP, "on", "Light", "low LDR")))).start()
                     client.publish("sensors/light", json.dumps({"status": "on"}))
                     client.publish("Alert_brightness", json.dumps({"status": "on"}))
                     print("Light turned ON - AUTO")
                 else:
-                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "off", "Light", "high LDR"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(LIGHT_PLUG_IP, "off", "Light", "high LDR")))).start()
                     client.publish("sensors/light", json.dumps({"status": "off"}))
                     print("Light turned OFF - AUTO")
 
@@ -203,11 +203,11 @@ def on_message(client, userdata, msg):
             manual_fan = payload.get("status")
             if manual_fan is not None:
                 if manual_fan == "on":
-                    asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", "manual control"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(FAN_PLUG_IP, "on", "Fan", "manual control")))).start()
                     client.publish("sensors/fan", json.dumps({"status": "on"}))
                     print("Fan turned ON - MANUAL")
                 else:
-                    asyncio.run(control_kasa(FAN_PLUG_IP, "off", "Fan", "manual control"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(FAN_PLUG_IP, "off", "Fan", "manual control")))).start()
                     client.publish("sensors/fan", json.dumps({"status": "off"}))
                     print("Fan turned OFF - MANUAL")
         
@@ -215,11 +215,11 @@ def on_message(client, userdata, msg):
             manual_led = payload.get("status")
             if manual_led is not None:
                 if manual_led == "on":
-                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", "manual control"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(LIGHT_PLUG_IP, "on", "Light", "manual control")))).start()
                     client.publish("sensors/light", json.dumps({"status": "on"}))
                     print("Light turned ON - MANUAL")
                 else:
-                    asyncio.run(control_kasa(LIGHT_PLUG_IP, "off", "Light", "manual control"))
+                    threading.Thread(target=lambda: asyncio.run((control_kasa(LIGHT_PLUG_IP, "off", "Light", "manual control")))).start()
                     client.publish("sensors/light", json.dumps({"status": "off"}))
                     print("Light turned OFF - MANUAL")
 
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     client.connect(AWS_IOT_ENDPOINT, AWS_IOT_PORT)
     print("Connected to MQTT broker")
     
-    client.publish("HomePi/PiBStatus", json.dumps({"message": "Raspberry Pi B is online"}))
+    client.publish("HomePi/PiBStatus", json.dumps({"message": "System is online"}))
     client.publish("sensors/fan", json.dumps({"status": "off"}))
     client.publish("sensors/led", json.dumps({"status": "off"}))
 
