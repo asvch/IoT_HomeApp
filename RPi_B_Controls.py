@@ -3,13 +3,15 @@
 
 import asyncio
 import json
+import threading
 import paho.mqtt.client as mqtt
 import ssl
 from kasa import SmartPlug    # kasa discover in terminal to get plug ip
 import logging
 from datetime import datetime, timedelta
 import json
-import RPi.GPIO as GPIO
+import time
+# import RPi.GPIO as GPIO
 
 logging.basicConfig(
     filename="device_usage.log",
@@ -28,12 +30,16 @@ FAN_PLUG_IP = "192.168.26.152"
 LIGHT_PLUG_IP = "192.168.26.219" 
 
 
-CA_CERT = "/home/ajayc/R_Certs/AmazonRootCA1.pem"
-CLIENT_CERT = "/home/ajayc/R_Certs/certificate.pem.crt"
-PRIVATE_KEY = "/home/ajayc/R_Certs/private.pem.key"
+# CA_CERT = "/home/ajayc/R_Certs/AmazonRootCA1.pem"
+# CLIENT_CERT = "/home/ajayc/R_Certs/certificate.pem.crt"
+# PRIVATE_KEY = "/home/ajayc/R_Certs/private.pem.key"
+CA_CERT = "C:/Users/ajayc/Downloads/AmazonRootCA1.pem"
+CLIENT_CERT = "C:/Users/ajayc/Downloads/e0d1fe9ce48bd96a1a3978fed22fe2b5fea6a831bc8b5b95b25c536800023d95-certificate.pem.crt"
+PRIVATE_KEY = "C:/Users/ajayc/Downloads/e0d1fe9ce48bd96a1a3978fed22fe2b5fea6a831bc8b5b95b25c536800023d95-private.pem.key"
 
-# AWS_IOT_ENDPOINT = "a1s8a3str92yk-ats.iot.us-east-1.amazonaws.com"   # Ajays endpoint
-AWS_IOT_ENDPOINT = "abvk6ulxodwj4-ats.iot.us-east-1.amazonaws.com"
+
+AWS_IOT_ENDPOINT = "a1s8a3str92yk-ats.iot.us-east-1.amazonaws.com"   # Ajays endpoint
+# AWS_IOT_ENDPOINT = "abvk6ulxodwj4-ats.iot.us-east-1.amazonaws.com"
 
 # Topics to Subscribe to
 TEMP_TOPIC = "sensors/temperature"
@@ -56,54 +62,114 @@ TEMP_THRESHOLD = 80
 LDR_THRESHOLD = 0.35             # ADJUST AS REQUIRED
 
 def button_callback(channel):
-    global FAN_STATUS
-    # fan_status = "off"                # REMEMBER TO CHANGE - ADD GLOBAL FAN & LIGHT STATUS VALUES
+    # global FAN_STATUS                         # change TO ACTUAL GLOBAL FAN STATUS VALUE
+    fan_status = device_states["Fan"]["state"]
+    print("THEEE FAN STATUS", fan_status)
 
-    manual_status = "off" if FAN_STATUS == "on" else "on"
+    manual_status = "off" if fan_status == "on" else "on"
     new_status = json.dumps({"fan": manual_status})
     client.publish(MANUAL_FAN, new_status)
     print("Button pressed! Toggled fan status:", manual_status)
 
 
 async def control_kasa(plug_ip, state, device_name="Unknown", reason="automatic"):
-    plug = SmartPlug(plug_ip)
-    await plug.update()
+    # plug = SmartPlug(plug_ip)                    # FIX - UNCOMMENT -----------------
+    # await plug.update() 
 
-    prev_state = device_states[device_name]["state"]
     now = datetime.now()
+    prev_state = device_states[device_name]["state"]
+    last_changed = device_states[device_name]["last_changed"]
 
+    # prev_state = device_states[device_name]["state"]
+    # now = datetime.now()
+
+    # If the state is changing, update usage tracking
     if prev_state != state:
-        # Calculate ON duration if switching OFF
-        if prev_state == "on" and device_states[device_name]["last_changed"]:
-            duration = now - device_states[device_name]["last_changed"]
-            device_states[device_name]["on_duration"] += duration
+        if prev_state == "on" and last_changed:
+            # Add elapsed on-time since last_changed
+            elapsed = now - last_changed
+            device_states[device_name]["on_duration"] += elapsed
+
+        # If turning ON, set new start time
+        if state == "on":
+            device_states[device_name]["last_changed"] = now
+        else:
+            device_states[device_name]["last_changed"] = None
 
         device_states[device_name]["state"] = state
-        device_states[device_name]["last_changed"] = now
+    
+        # Log and act
+        # print(f"Turning {state.upper()}")
+        logging.info(f"{device_name} turned {state.upper()} - {reason}")
 
-        logging.info(f"{device_name} turned {state.upper()} due to {reason}")
+        if state == "on" and prev_state == "off":                             # is this in bigger if? or outside?
+            # await plug.turn_on()
+            print("Turning ON")                          # just for TESTING PURPOSES - change/UNCOMMENT
+        elif state == "off" and prev_state == "on":
+            # await plug.turn_off()
+            print("Turning OFF")
+            # report_usage()
 
-    if state == "on":
-        await plug.turn_on()
-    else:
-        await plug.turn_off()
+    # if prev_state != state:
+    #     # Calculate ON duration if switching OFF
+    #     if prev_state == "on" and device_states[device_name]["last_changed"]:
+    #         duration = now - device_states[device_name]["last_changed"]
+    #         device_states[device_name]["on_duration"] += duration
+
+    #     device_states[device_name]["state"] = state
+    #     device_states[device_name]["last_changed"] = now
+
+    #     logging.info(f"{device_name} turned {state.upper()} due to {reason}")
+
+    # if state == "on":
+    #     await plug.turn_on()
+    # else:
+    #     await plug.turn_off()
+    # if state == "on" and prev_state == "off":
+    #     # await plug.turn_on()
+    #     print("Turning ON")                          # just for TESTING PURPOSES - change/UNCOMMENT
+    # elif state == "off" and prev_state == "on":
+    #     # await plug.turn_off()
+    #     print("Turning OFF")
 
 
 def report_usage():
     now = datetime.now()
+    total_duration = timedelta(minutes=2)
+
     for device, info in device_states.items():
-        total_duration = timedelta(hours=0.5)  
         on_time = info["on_duration"]
 
+        # If still on, add ongoing duration
         if info["state"] == "on" and info["last_changed"]:
             on_time += now - info["last_changed"]
 
         usage_percent = (on_time.total_seconds() / total_duration.total_seconds()) * 100
-        print(f"{device} was ON for {usage_percent:.2f}% of the last hour.")
+        usage_percent = min(usage_percent, 100.0)  # Cap at 100%
+
+        # Logging & console output
+        logging.info(f"{device} was ON for {usage_percent:.2f}% of the last 2 minutes.")
+        print(f"{device} was ON for {usage_percent:.2f}% of the last 2 minutes.")
+
+        # Publish usage to MQTT
+        topic = f"{device.lower()}_usage_percentage"
+        client.publish(topic, json.dumps({"percentage": usage_percent}))
+        print(f"Published {device} usage percentage: {usage_percent:.2f}%")
+
+        # Reset tracking for next interval
+        device_states[device]["on_duration"] = timedelta()
+        device_states[device]["last_changed"] = now if info["state"] == "on" else None
+
+        
+def start_usage_report_loop(interval_sec=300):  # 300 sec = 5 minutes
+    def loop():
+        while True:
+            time.sleep(interval_sec)
+            report_usage()
+    threading.Thread(target=loop, daemon=True).start()
 
 
 def on_message(client, userdata, msg):
-
     global CONTROL_MODE
 
     topic = msg.topic
@@ -132,7 +198,7 @@ def on_message(client, userdata, msg):
     if CONTROL_MODE == "automatic":
         if topic == TEMP_TOPIC:
             temperature = payload.get("temperature")
-            print(report_usage())
+            # print(report_usage())
             if temperature is not None:
                 if temperature > TEMP_THRESHOLD:
                     asyncio.run(control_kasa(FAN_PLUG_IP, "on", "Fan", "temperature threshold exceeded"))
@@ -146,7 +212,7 @@ def on_message(client, userdata, msg):
 
         elif topic == LDR_TOPIC:
             ldr_value = payload.get("brightness")
-            print(report_usage())
+            # print(report_usage())
             if ldr_value is not None:
                 if ldr_value > LDR_THRESHOLD:
                     asyncio.run(control_kasa(LIGHT_PLUG_IP, "on", "Light", "low LDR"))
@@ -185,17 +251,15 @@ def on_message(client, userdata, msg):
                     print("Light turned OFF - MANUAL")
 
 
-
-
 if __name__ == "__main__":
 
-    # Code for Pi B Button
-    BUTTON_PIN = 5
+    # # Code for Pi B Button
+    # BUTTON_PIN = 5
 
-    GPIO.cleanup()
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Pull-up resistor
-    GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=button_callback, bouncetime=300)
+    # GPIO.cleanup()
+    # GPIO.setmode(GPIO.BCM)
+    # GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Pull-up resistor
+    # GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING, callback=button_callback, bouncetime=300)
 
     # Set up MQTT client
     client = mqtt.Client(client_id=CLIENT_ID)
@@ -215,6 +279,9 @@ if __name__ == "__main__":
     client.subscribe(MANUAL_LED)                  # just subscribe to manual topics now too
     client.subscribe(MANUAL_FAN)
     print("Subscribed to topics")
+
+    start_usage_report_loop(120)  # Start the usage report loop - in seconds
+
 
     client.on_message = on_message
 

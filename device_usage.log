@@ -10,3 +10,129 @@
 2025-04-05 23:29:40,912 - INFO - Fan turned OFF due to temperature normal
 2025-04-05 23:30:52,849 - INFO - Fan turned ON due to temperature threshold exceeded
 2025-04-05 23:30:56,278 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:14:57,782 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:15:50,190 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:17:48,156 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:20:06,571 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:22:45,378 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:28:43,324 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:40:02,153 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:40:08,704 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:40:31,835 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:40:37,143 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:42:29,347 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:42:29,348 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:42:29,349 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:43:16,462 - INFO - Fan was ON for 15.70% of the last 5 minutes.
+2025-04-08 23:43:16,474 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:43:16,476 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:44:05,324 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:44:05,325 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:44:05,327 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:44:26,329 - INFO - Fan was ON for 7.00% of the last 5 minutes.
+2025-04-08 23:44:26,330 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:44:26,331 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:47:44,758 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:47:44,761 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:47:56,700 - INFO - Fan was ON for 3.98% of the last 5 minutes.
+2025-04-08 23:47:56,701 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:47:56,703 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:49:43,550 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:49:43,553 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:49:49,260 - INFO - Fan was ON for 1.90% of the last 5 minutes.
+2025-04-08 23:49:49,261 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:49:49,263 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:50:47,161 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:50:47,161 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:50:47,162 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:51:08,371 - INFO - Fan was ON for 7.07% of the last 5 minutes.
+2025-04-08 23:51:08,373 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:51:36,280 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:51:36,281 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:51:36,282 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:52:07,881 - INFO - Fan was ON for 10.53% of the last 5 minutes.
+2025-04-08 23:52:07,882 - INFO - Light turned ON due to low LDR
+2025-04-08 23:52:16,573 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:52:16,574 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:52:21,893 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:52:21,893 - INFO - Light was ON for 4.67% of the last 5 minutes.
+2025-04-08 23:52:21,894 - INFO - Light turned OFF due to high LDR
+2025-04-08 23:53:28,290 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:53:28,291 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:53:28,292 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:53:37,356 - INFO - Fan was ON for 3.02% of the last 5 minutes.
+2025-04-08 23:53:37,357 - INFO - Light turned ON due to low LDR
+2025-04-08 23:54:30,586 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:54:30,588 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:54:34,213 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:54:34,213 - INFO - Light was ON for 18.95% of the last 5 minutes.
+2025-04-08 23:54:34,215 - INFO - Light turned OFF due to high LDR
+2025-04-08 23:57:45,227 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:57:45,228 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:57:45,229 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-08 23:57:52,087 - INFO - Fan was ON for 2.29% of the last 5 minutes.
+2025-04-08 23:57:52,087 - INFO - Light was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:57:52,089 - INFO - Light turned ON due to low LDR
+2025-04-08 23:58:54,975 - INFO - Fan was ON for 20.96% of the last 5 minutes.
+2025-04-08 23:58:54,975 - INFO - Light was ON for 20.96% of the last 5 minutes.
+2025-04-08 23:58:54,977 - INFO - Fan turned OFF due to temperature normal
+2025-04-08 23:58:56,585 - INFO - Fan was ON for 0.00% of the last 5 minutes.
+2025-04-08 23:58:56,586 - INFO - Light was ON for 0.54% of the last 5 minutes.
+2025-04-08 23:58:56,587 - INFO - Light turned OFF due to high LDR
+2025-04-09 00:15:09,116 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:15:09,116 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:15:09,118 - INFO - Fan turned ON due to temperature threshold exceeded
+2025-04-09 00:15:14,636 - INFO - Fan was ON for 4.60% of the last 2 minutes.
+2025-04-09 00:15:14,637 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:15:14,638 - INFO - Light turned ON due to low LDR
+2025-04-09 00:15:43,602 - INFO - Fan was ON for 24.14% of the last 2 minutes.
+2025-04-09 00:15:43,603 - INFO - Light was ON for 24.14% of the last 2 minutes.
+2025-04-09 00:15:43,605 - INFO - Light turned OFF due to high LDR
+2025-04-09 00:15:46,482 - INFO - Fan was ON for 2.40% of the last 2 minutes.
+2025-04-09 00:15:46,482 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:15:46,484 - INFO - Fan turned OFF due to temperature normal
+2025-04-09 00:20:19,128 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:20:19,128 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:20:19,130 - INFO - Fan turned ON - temperature threshold exceeded
+2025-04-09 00:20:25,663 - INFO - Fan was ON for 5.44% of the last 2 minutes.
+2025-04-09 00:20:25,663 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:20:25,665 - INFO - Light turned ON - low LDR
+2025-04-09 00:20:38,326 - INFO - Fan was ON for 10.55% of the last 2 minutes.
+2025-04-09 00:20:38,326 - INFO - Light was ON for 10.55% of the last 2 minutes.
+2025-04-09 00:20:38,328 - INFO - Fan turned OFF - temperature normal
+2025-04-09 00:20:41,899 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 00:20:41,900 - INFO - Light was ON for 2.98% of the last 2 minutes.
+2025-04-09 00:20:41,901 - INFO - Light turned OFF - high LDR
+2025-04-09 11:49:21,117 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:49:21,118 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:49:21,122 - INFO - Fan turned ON - temperature threshold exceeded
+2025-04-09 11:49:33,566 - INFO - Fan was ON for 10.37% of the last 2 minutes.
+2025-04-09 11:49:33,568 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:49:33,571 - INFO - Fan turned OFF - temperature normal
+2025-04-09 11:50:17,144 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:50:17,146 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:50:17,149 - INFO - Light turned ON - low LDR
+2025-04-09 11:50:38,246 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:50:38,247 - INFO - Light was ON for 17.58% of the last 2 minutes.
+2025-04-09 11:50:38,250 - INFO - Light turned OFF - high LDR
+2025-04-09 11:51:26,094 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:51:26,096 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:51:26,098 - INFO - Fan turned ON - temperature threshold exceeded
+2025-04-09 11:51:35,733 - INFO - Fan was ON for 8.03% of the last 2 minutes.
+2025-04-09 11:51:35,735 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:51:35,737 - INFO - Fan turned OFF - temperature normal
+2025-04-09 11:53:56,667 - INFO - Fan turned ON - temperature threshold exceeded
+2025-04-09 11:54:11,587 - INFO - Fan turned OFF - temperature normal
+2025-04-09 11:54:11,588 - INFO - Fan was ON for 12.43% of the last 2 minutes.
+2025-04-09 11:54:11,589 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:57:07,865 - INFO - Light turned ON - low LDR
+2025-04-09 11:57:14,179 - INFO - Light turned OFF - high LDR
+2025-04-09 11:57:14,180 - INFO - Fan was ON for 0.00% of the last 2 minutes.
+2025-04-09 11:57:14,181 - INFO - Light was ON for 5.26% of the last 2 minutes.
+2025-04-09 12:10:02,718 - INFO - Fan turned ON - temperature threshold exceeded
+2025-04-09 12:11:51,346 - INFO - Fan was ON for 90.52% of the last 2 minutes.
+2025-04-09 12:11:51,348 - INFO - Light was ON for 0.00% of the last 2 minutes.
+2025-04-09 12:12:14,367 - INFO - Light turned ON - low LDR
+2025-04-09 12:13:51,350 - INFO - Fan was ON for 100.00% of the last 2 minutes.
+2025-04-09 12:13:51,352 - INFO - Light was ON for 80.82% of the last 2 minutes.
+2025-04-09 12:18:13,720 - INFO - Fan turned ON - temperature threshold exceeded
