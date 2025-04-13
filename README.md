@@ -166,7 +166,7 @@ We have three sections in the UI,
 
 We have provided comments in sections of code to understand the logic beneath the functionality
 
-## Raspberry pi A and sensors related code
+## Raspberry pi A and sensors
 
 Relavent code can be executed by
 
