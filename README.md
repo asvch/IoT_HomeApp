@@ -166,6 +166,34 @@ We have three sections in the UI,
 
 We have provided comments in sections of code to understand the logic beneath the functionality
 
+## Raspberry pi A and sensors related code
+
+Relavent code can be executed by
+
+'''
+python ./sensors/sensors_mqtt.py
+'''
+
+The following external packages need to be installed:
+
+'''
+adafruit_ads1x15
+adafruit_dht
+rpi-lgpio
+paho-mqtt
+ssl
+'''
+
+The pin configurations are as follows: 
+
+ADS1115 ADC module: I2C protocal (SCL&SDA)
+
+DHT11 Temperature and humidity sensor: GPIO4
+
+Button: GPIO5 through pull-up resistor
+
+LED: GPIO6
+
 <h2 id="rpibcontrolpy-file">RPi_B_Control.py File</h2>
 
 To run this code:
