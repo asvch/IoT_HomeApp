@@ -7,7 +7,8 @@
 3. [How to interpret the results](#how-to-interpret-the-results)
 4. [Any sample input and output files(Topics)](#any-sample-input-and-output-filestopics)
 5. [Any other information required to run and understand the code](#any-other-information-required-to-run-and-understand-the-code)
-6. [RPi_B_Control.py File](#rpibcontrolpy-file)
+6. [Raspberry pi A and sensors](#raspberry-pi-A-and-sensors)
+7. [RPi_B_Control.py File](#rpibcontrolpy-file)
 
 
 
